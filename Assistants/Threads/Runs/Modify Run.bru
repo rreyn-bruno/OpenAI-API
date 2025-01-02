@@ -1,0 +1,29 @@
+meta {
+  name: Modify Run
+  type: http
+  seq: 5
+}
+
+post {
+  url: https://api.openai.com/v1/threads/thread_abc123/runs/run_abc123
+  body: json
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}
+
+body:json {
+  {
+      "metadata": {
+        "user_id": "user_abc123"
+      }
+    }
+}

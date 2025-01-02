@@ -1,0 +1,15 @@
+meta {
+  name: Cancel Batch
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://api.openai.com/v1/batches/batch_abc123/cancel
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}

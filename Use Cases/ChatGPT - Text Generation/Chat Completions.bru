@@ -1,0 +1,84 @@
+meta {
+  name: Chat Completions
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/chat/completions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "model": "gpt-3.5-turbo",
+    "messages": {{messages}}
+  }
+}
+
+script:pre-request {
+  let messages = [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "Who won the world series in 2020?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Los Angeles Dodgers won the World Series in 2020."
+        },
+        {
+          "role": "user",
+          "content": "Where was it played?"
+        }
+      ];
+  
+  bru.setVar('messages', JSON.stringify(messages));
+  
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Content-Type header is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  
+  test("Validate the choices array", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.choices).to.be.an('array').that.is.not.empty;
+      responseData.choices.forEach(function(choice) {
+          expect(choice).to.be.an('object');
+          expect(choice.index).to.exist.and.to.be.a('number');
+          expect(choice.message).to.exist.and.to.be.an('object');
+          expect(choice.finish_reason).to.exist.and.to.be.a('string');
+      });
+  });
+  
+  
+  test("Created field is a non-negative integer", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.created).to.be.a('number').and.to.be.at.least(0);
+  });
+  
+  
+  test("Model field should not be empty", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.model).to.exist.and.to.not.be.empty;
+  });
+}

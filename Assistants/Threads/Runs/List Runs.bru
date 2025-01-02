@@ -1,0 +1,21 @@
+meta {
+  name: List Runs
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://api.openai.com/v1/threads/thread_abc123/runs
+  body: none
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}

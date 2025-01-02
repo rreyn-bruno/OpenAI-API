@@ -1,0 +1,22 @@
+meta {
+  name: Create Fine Tuning Job
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://api.openai.com/v1/fine_tuning/jobs
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "training_file": "file-BK7bzQj3FfZFXr7DbL6xJwfo",
+      "model": "gpt-3.5-turbo"
+    }
+}

@@ -1,0 +1,63 @@
+meta {
+  name: Create Embeddings
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/embeddings
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "input": "OpenAI provides advanced AI tools",
+      "model": "text-embedding-ada-002"
+  }
+}
+
+tests {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response time is within an acceptable range", function () {
+    expect(res.getResponseTime()).to.be.below(300);
+  });
+  
+  
+  test("Content-Type header is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  
+  test("Validate the structure of the response object", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData).to.have.property('object');
+    expect(responseData).to.have.property('data');
+    expect(responseData).to.have.property('model');
+    expect(responseData).to.have.property('usage');
+  });
+  
+  
+  test("Validate the structure of the data array - object, index, and embedding", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.data).to.be.an('array');
+      responseData.data.forEach(function(item) {
+          expect(item).to.be.an('object');
+          expect(item.object).to.exist.and.to.be.a('string');
+          expect(item.index).to.exist.and.to.be.a('number');
+          expect(item.embedding).to.exist.and.to.be.an('array');
+      });
+  });
+  
+}

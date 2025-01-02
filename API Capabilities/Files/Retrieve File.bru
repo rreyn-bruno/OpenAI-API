@@ -1,0 +1,11 @@
+meta {
+  name: Retrieve File
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://api.openai.com/v1/files/{{filename}}
+  body: none
+  auth: inherit
+}

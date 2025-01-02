@@ -1,0 +1,51 @@
+meta {
+  name: Retrieve Models
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.openai.com/v1/models/gpt-3.5-turbo-instruct
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response has the required fields", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData).to.have.property('id');
+    expect(responseData).to.have.property('object');
+    expect(responseData).to.have.property('created');
+    expect(responseData).to.have.property('owned_by');
+  });
+  
+  
+  test("Id is a non-empty string", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.id).to.be.a('string').and.to.have.lengthOf.at.least(1, "Id should not be empty");
+  });
+  
+  
+  test("Created is a valid timestamp", function () {
+    const responseData = res.getBody();
+  
+    expect(responseData).to.be.an('object');
+    expect(responseData.created).to.match(/^\d{10}$/);
+  });
+  
+  
+  test("Owned_by is a non-empty string", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.owned_by).to.be.a('string').and.to.have.lengthOf.at.least(1, "Owned_by should be a non-empty string");
+  });
+}

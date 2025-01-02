@@ -1,0 +1,11 @@
+meta {
+  name: Delete Fine Tuned Model
+  type: http
+  seq: 3
+}
+
+delete {
+  url: https://api.openai.com/v1/models/ft:gpt-3.5-turbo:acemeco:suffix:abc123
+  body: none
+  auth: inherit
+}

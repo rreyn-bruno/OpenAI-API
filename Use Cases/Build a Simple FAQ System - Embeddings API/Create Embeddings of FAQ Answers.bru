@@ -1,0 +1,92 @@
+meta {
+  name: Create Embeddings of FAQ Answers
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/embeddings
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{openaikey}}
+}
+
+body:json {
+  {
+      "input": "{{inputString}}",
+      "model": "text-embedding-3-small"
+  }
+}
+
+script:pre-request {
+  let context = [
+      "You can pay using credit card, PayPal, or bank transfer.",
+      "You can reset your password by clicking 'Forgot password?' at the login screen.",
+      "You may return products within 30 days for a full refund.",
+      "Track your order by logging into your account and visiting the order history page."
+  ];
+  
+  
+  
+  
+}
+
+tests {
+  var responseData = res.getBody();
+  //usually these can be stored in a vector database 
+  bru.setVar("storedEmbeddings", JSON.stringify(responseData.data.map(embed => embed.embedding)));
+  test("Response Content-Type is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  
+  test("Data object and its properties are valid", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.exist.and.to.be.an('array');
+      
+      responseData.data.forEach(function(item) {
+          expect(item).to.be.an('object');
+          expect(item.index).to.exist.and.to.be.a('number');
+          expect(item.embedding).to.exist.and.to.be.an('array');
+      });
+  });
+  
+  
+  test("Index is a non-negative integer", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData.data).to.be.an('array');
+      responseData.data.forEach(function(item) {
+          expect(item.index).to.be.a('number');
+          expect(item.index).to.be.at.least(0);
+      });
+  });
+  
+  
+  test("Embedding array is present and contains at least one element", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.data).to.be.an('array');
+    expect(responseData.data).to.have.lengthOf.at.least(1, "Embedding array should contain at least one element");
+  });
+  
+  
+  test("Usage object and its properties are present", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.usage).to.exist.and.to.be.an('object');
+    expect(responseData.usage.prompt_tokens).to.exist.and.to.be.a('number');
+    expect(responseData.usage.total_tokens).to.exist.and.to.be.a('number');
+  });
+}

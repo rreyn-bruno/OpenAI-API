@@ -1,0 +1,32 @@
+meta {
+  name: Create Thread and Run
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/threads/runs
+  body: json
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}
+
+body:json {
+  {
+        "assistant_id": "asst_abc123",
+        "thread": {
+          "messages": [
+            {"role": "user", "content": "Explain deep learning to a 5 year old."}
+          ]
+        }
+      }
+}

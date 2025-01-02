@@ -1,0 +1,32 @@
+meta {
+  name: Submit Tool Outputs
+  type: http
+  seq: 6
+}
+
+post {
+  url: https://api.openai.com/v1/threads/thread_123/runs/run_123/submit_tool_outputs
+  body: json
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}
+
+body:json {
+  {
+      "tool_outputs": [
+        {
+          "tool_call_id": "call_001",
+          "output": "70 degrees and sunny."
+        }
+      ]
+    }
+}

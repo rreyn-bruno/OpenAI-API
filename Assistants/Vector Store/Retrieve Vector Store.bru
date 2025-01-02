@@ -1,0 +1,21 @@
+meta {
+  name: Retrieve Vector Store
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://api.openai.com/v1/vector_stores/vs_abc123
+  body: none
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}

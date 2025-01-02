@@ -1,0 +1,20 @@
+meta {
+  name: Retrieve Batch
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.openai.com/v1/batches/batch_abc123
+  body: none
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}

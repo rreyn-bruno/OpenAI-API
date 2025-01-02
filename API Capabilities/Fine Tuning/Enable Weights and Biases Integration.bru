@@ -1,0 +1,42 @@
+meta {
+  name: Enable Weights and Biases Integration
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://api.openai.com/v1/fine_tuning/jobs
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "model": "gpt-3.5-turbo-0125",
+      "training_file": "file-ABC123",
+      "validation_file": "file-DEF456",
+      "integrations": [
+          {
+              "type": "wandb",
+              "wandb": {
+                  "project": "custom-wandb-project",
+                  "tags": ["project:tag", "lineage"]
+              }
+          }
+      ]
+  }
+}
+
+docs {
+  Weights and Biases (W&B) is a popular tool for tracking machine learning experiments. You can use the OpenAI integration with W&B to track your fine-tuning jobs in W&B. This integration will automatically log metrics, hyperparameters, and other job-related information to the W&B project you specify.
+  
+  To integrate your fine-tuning jobs with W&B, you'll need to
+  
+  Provide authentication credentials for your Weights and Biases account to OpenAI
+  Configure the W&B integration when creating new fine-tuning jobs
+  
+}

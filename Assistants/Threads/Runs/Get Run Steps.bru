@@ -1,0 +1,21 @@
+meta {
+  name: Get Run Steps
+  type: http
+  seq: 9
+}
+
+get {
+  url: https://api.openai.com/v1/threads/thread_abc123/runs/run_abc123/steps/step_abc123
+  body: none
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}

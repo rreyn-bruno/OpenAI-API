@@ -1,0 +1,23 @@
+meta {
+  name: Create Message in a Thread
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/threads/thread_abc123/messages
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+body:json {
+  {
+        "role": "user",
+        "content": "How does AI work? Explain it in simple terms."
+      }
+}

@@ -1,0 +1,61 @@
+meta {
+  name: Moderations
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/moderations
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "input": "I want to kill them."
+    }
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Content type is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  
+  test("Id and model fields must exist", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.id).to.exist.and.to.be.a('string');
+      expect(responseData.model).to.exist.and.to.be.a('string');
+  });
+  
+  
+  test("Results array is present and contains at least one element", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.have.property('results').that.is.an('array').and.not.empty;
+  });
+  
+  
+  test("Results array contains expected fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.results).to.be.an('array');
+      
+      responseData.results.forEach(function(result) {
+          expect(result.flagged).to.exist;
+          expect(result.categories).to.exist;
+          expect(result.category_scores).to.exist;
+      });
+  });
+}

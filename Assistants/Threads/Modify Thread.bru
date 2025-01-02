@@ -1,0 +1,25 @@
+meta {
+  name: Modify Thread
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://api.openai.com/v1/threads/thread_abc123
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+body:json {
+  {
+        "metadata": {
+          "modified": "true",
+          "user": "abc123"
+        }
+      }
+}

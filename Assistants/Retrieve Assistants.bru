@@ -1,0 +1,16 @@
+meta {
+  name: Retrieve Assistants
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://api.openai.com/v1/assistants/asst_W5SWbNMDJInDoXaKP66GajHN
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}

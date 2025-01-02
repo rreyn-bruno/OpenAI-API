@@ -1,0 +1,25 @@
+meta {
+  name: Create Image Variation
+  type: http
+  seq: 5
+}
+
+post {
+  url: https://api.openai.com/v1/images/variations
+  body: multipartForm
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}
+
+body:multipart-form {
+  image: @file(otter.png)
+  n: 2
+  size: 1024x1024
+}

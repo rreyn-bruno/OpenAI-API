@@ -1,0 +1,11 @@
+meta {
+  name: Retrieve File Contents
+  type: http
+  seq: 5
+}
+
+get {
+  url: https://api.openai.com/v1/files/file-abc123/content>file.jsonl
+  body: none
+  auth: inherit
+}

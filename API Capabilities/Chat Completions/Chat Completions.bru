@@ -1,0 +1,114 @@
+meta {
+  name: Chat Completions
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/chat/completions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "developer",
+          "content": "You are a story writer."
+        },
+        {
+          "role": "user",
+          "content": "Write me a short story about Bruno the dog"
+        }
+      ]
+    }
+}
+
+script:pre-request {
+  let messages = [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "Who won the world series in 2020?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Los Angeles Dodgers won the World Series in 2020."
+        },
+        {
+          "role": "user",
+          "content": "Where was it played?"
+        }
+      ];
+  
+  bru.setVar('messages', JSON.stringify(messages));
+  
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response has the required fields", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData).to.be.an('object');
+      expect(responseData.id).to.exist;
+      expect(responseData.object).to.exist;
+      expect(responseData.created).to.exist;
+      expect(responseData.model).to.exist;
+      expect(responseData.choices).to.exist;
+      expect(responseData.usage).to.exist;
+      expect(responseData.system_fingerprint).to.exist;
+  });
+  
+  
+  test("Choices array and its elements are valid", function () {
+    const responseData = res.getBody();
+  
+    expect(responseData.choices).to.be.an('array').that.is.not.empty;
+  
+    responseData.choices.forEach(function(choice) {
+      expect(choice).to.be.an('object');
+      expect(choice.index).to.exist.and.to.be.a('number');
+      expect(choice.message).to.exist.and.to.be.an('object');
+      expect(choice.message.role).to.exist.and.to.be.a('string');
+      expect(choice.message.content).to.exist.and.to.be.a('string');
+      expect(choice.finish_reason).to.exist.and.to.be.a('string');
+    });
+  });
+  
+  
+  test("Ensure message object within choices has non-empty role and content", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData.choices).to.be.an('array');
+    expect(responseData.choices).to.have.lengthOf.at.least(1, "There should be at least one choice");
+  
+    responseData.choices.forEach(function(choice) {
+      expect(choice.message).to.be.an('object');
+      expect(choice.message.role).to.exist.and.to.have.lengthOf.at.least(1, "Role should not be empty");
+      expect(choice.message.content).to.exist.and.to.have.lengthOf.at.least(1, "Content should not be empty");
+    });
+  });
+  
+  
+  test("Usage object contains prompt_tokens, completion_tokens, and total_tokens properties", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData.usage).to.have.property('prompt_tokens');
+    expect(responseData.usage).to.have.property('completion_tokens');
+    expect(responseData.usage).to.have.property('total_tokens');
+  });
+}

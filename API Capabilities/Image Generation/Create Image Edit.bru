@@ -1,0 +1,19 @@
+meta {
+  name: Create Image Edit
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://api.openai.com/v1/images/edits
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  image: @file()
+  mask: @file()
+  prompt: A cute baby sea otter wearing a beret
+  n: 2
+  size: 1024x1024
+}

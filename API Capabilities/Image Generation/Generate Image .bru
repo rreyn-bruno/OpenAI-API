@@ -1,0 +1,66 @@
+meta {
+  name: Generate Image
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/images/generations
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "model": "dall-e-3",
+      "prompt": "A cute baby sea otter",
+      "n": 1,
+      "size": "1024x1024"
+    }
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Content-Type is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  
+  test("Created field is present and is a non-negative integer", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.created).to.exist;
+    expect(responseData.created).to.be.a('number');
+    expect(responseData.created).to.be.at.least(0);
+  });
+  
+  
+  test("Data array is present and contains expected number of elements", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.exist.and.to.be.an('array').with.lengthOf(1);
+  });
+  
+  
+  test("Revised prompt and URL in data array are non-empty strings", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.be.an('array');
+      
+      responseData.data.forEach(function(item) {
+          expect(item.revised_prompt).to.be.a('string').and.to.have.lengthOf.at.least(1, "revised_prompt should not be empty");
+          expect(item.url).to.be.a('string').and.to.have.lengthOf.at.least(1, "url should not be empty");
+      });
+  });
+}

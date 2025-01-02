@@ -1,0 +1,147 @@
+meta {
+  name: Chat Completions with Function Calling
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/chat/completions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "model": "{{model}}",
+      "messages": [
+          {
+              "role": "user",
+              "content": "What is the weather in San Francisco?"
+          }
+      ],
+      "tools": [
+          {
+              "type": "function",
+              "function": {
+                  "name": "get_current_weather",
+                  "description": "Get the current weather",
+                  "parameters": {
+                      "type": "object",
+                      "properties": {
+                          "location": {
+                              "type": "string",
+                              "description": "The city and state, e.g. San Francisco, CA"
+                          },
+                          "format": {
+                              "type": "string",
+                              "enum": [
+                                  "celsius",
+                                  "fahrenheit"
+                              ],
+                              "description": "The temperature unit to use. Infer this from the users location."
+                          }
+                      },
+                      "required": [
+                          "location"
+                      ]
+                  }
+              }
+          }
+      ],
+      "tool_choice": "required"
+  }
+}
+
+script:pre-request {
+  let messages = [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "Who won the world series in 2020?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Los Angeles Dodgers won the World Series in 2020."
+        },
+        {
+          "role": "user",
+          "content": "What was the weather?"
+        }
+      ];
+  
+  bru.setVar('messages', messages);
+  
+}
+
+tests {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Validate the structure of the response object", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.id).to.exist.and.to.be.a('string');
+      expect(responseData.object).to.exist.and.to.be.a('string');
+      expect(responseData.created).to.exist.and.to.be.a('number');
+      expect(responseData.model).to.exist.and.to.be.a('string');
+      expect(responseData.choices).to.exist.and.to.be.an('array');
+      responseData.choices.forEach(function(choice) {
+          expect(choice).to.be.an('object');
+          expect(choice.index).to.exist.and.to.be.a('number');
+          expect(choice.message).to.exist.and.to.be.an('object');
+          expect(choice.message.role).to.exist.and.to.be.a('string');
+          // ... continue with other checks for choice.message properties
+          expect(choice.tool_calls).to.exist.and.to.be.an('array');
+          // ... continue with checks for tool_calls properties
+      });
+      expect(responseData.usage).to.exist.and.to.be.an('object');
+      expect(responseData.usage.prompt_tokens).to.exist.and.to.be.a('number');
+      // ... continue with other checks for usage properties
+      expect(responseData.system_fingerprint).to.exist.and.to.be.a('string');
+  });
+  
+  
+  test("Choices array is present and contains expected number of elements", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.choices).to.exist.and.to.be.an('array').with.lengthOf(1);
+  });
+  
+  
+  test("Ensure that 'tool_calls' array within 'choices' contains the required fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.choices).to.be.an('array');
+      
+      responseData.choices.forEach(choice => {
+          if (choice.message && choice.message.tool_calls) {
+              choice.message.tool_calls.forEach(toolCall => {
+                  expect(toolCall.id).to.exist;
+                  expect(toolCall.type).to.exist;
+                  expect(toolCall.function).to.exist;
+              });
+          }
+      });
+  });
+  
+  
+  test("Usage object contains expected fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.usage).to.be.an('object');
+      expect(responseData.usage).to.have.property('prompt_tokens');
+      expect(responseData.usage).to.have.property('completion_tokens');
+      expect(responseData.usage).to.have.property('total_tokens');
+  });
+}

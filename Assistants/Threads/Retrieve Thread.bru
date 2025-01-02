@@ -1,0 +1,16 @@
+meta {
+  name: Retrieve Thread
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.openai.com/v1/threads/thread_abc123
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}

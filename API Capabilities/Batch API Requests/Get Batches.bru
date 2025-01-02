@@ -1,0 +1,23 @@
+meta {
+  name: Get Batches
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/batches
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "input_file_id": "file-abc123",
+      "endpoint": "/v1/chat/completions",
+      "completion_window": "24h"
+    }
+}

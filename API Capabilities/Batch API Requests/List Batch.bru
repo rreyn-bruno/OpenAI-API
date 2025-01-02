@@ -1,0 +1,59 @@
+meta {
+  name: List Batch
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://api.openai.com/v1/batches?limit=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 2
+}
+
+headers {
+  Content-Type: application/json
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response has the required fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData).to.have.property('object');
+      expect(responseData).to.have.property('data');
+      expect(responseData).to.have.property('first_id');
+      expect(responseData).to.have.property('last_id');
+      expect(responseData).to.have.property('has_more');
+  });
+  
+  
+  test("Data array is present and contains the expected number of elements", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.exist.and.to.be.an('array');
+      expect(responseData.data).to.have.lengthOf.at.least(0);
+  });
+  
+  
+  test("Validate object is a non-empty string", function () {
+    const responseData = res.getBody();
+  
+    expect(responseData).to.be.an('object');
+    expect(responseData.object).to.be.a('string').and.to.have.lengthOf.at.least(1, "Object should be a non-empty string");
+  });
+  
+  
+  test("Verify Content-Type header is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+}

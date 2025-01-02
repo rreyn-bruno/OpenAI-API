@@ -1,0 +1,20 @@
+meta {
+  name: Delete Thread
+  type: http
+  seq: 4
+}
+
+delete {
+  url: https://api.openai.com/v1/threads/thread_abc123
+  body: none
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}

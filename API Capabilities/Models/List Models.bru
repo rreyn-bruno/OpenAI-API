@@ -1,0 +1,58 @@
+meta {
+  name: List Models
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://api.openai.com/v1/models
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response has the required fields - id, object, created, and owned_by", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.data).to.be.an('array').that.is.not.empty;
+    
+    responseData.data.forEach(function(item) {
+      expect(item).to.have.property('id');
+      expect(item).to.have.property('object');
+      expect(item).to.have.property('created');
+      expect(item).to.have.property('owned_by');
+    });
+  });
+  
+  
+  test("Data array contains at least one element", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData.data).to.be.an('array').that.is.not.empty;
+  });
+  
+  
+  test("Id is a non-empty string and created is a non-negative integer", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      responseData.data.forEach(function(item) {
+          expect(item.id).to.be.a('string').and.to.have.lengthOf.at.least(1, "Id should be a non-empty string");
+          expect(item.created).to.be.a('number').and.to.be.at.least(0, "Created should be a non-negative integer");
+      });
+  });
+  
+  
+  test("Object property must be a non-empty string", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.object).to.be.a('string').and.to.have.lengthOf.at.least(1, "Object should be a non-empty string");
+  });
+}

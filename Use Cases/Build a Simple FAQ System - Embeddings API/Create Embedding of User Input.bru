@@ -1,0 +1,83 @@
+meta {
+  name: Create Embedding of User Input
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://api.openai.com/v1/embeddings
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{openaikey}}
+}
+
+body:json {
+  {
+      "input": "{{inputString}}",
+      "model": "text-embedding-3-small"
+  }
+}
+
+script:pre-request {
+  let userInput = bru.getVar('inputString'); 
+  if(userInput == null || userInput == "undefined"){
+      userInput = "What forms of payment are accepted?";
+      bru.setVar('inputString', userInput);
+  }
+  
+}
+
+tests {
+  var responseData = res.getBody();
+  console.log(responseData)
+  bru.setVar("userInputEmbeddings", JSON.stringify(responseData.data.map(embed => embed.embedding)));
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Data object and its properties are present", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.exist.and.to.be.an('array');
+      responseData.data.forEach(function(item) {
+          expect(item).to.be.an('object');
+          expect(item.index).to.exist.and.to.be.a('number');
+          expect(item.embedding).to.exist.and.to.be.an('array');
+      });
+  });
+  
+  
+  test("Embedding array is present and contains expected number of elements", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.data).to.exist.and.to.be.an('array');
+    expect(responseData.data).to.have.lengthOf.at.least(1, "Embedding array should not be empty");
+  });
+  
+  
+  test("Model field should not be empty", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData.model).to.exist.and.to.not.be.empty;
+  });
+  
+  
+  test("Usage object and its properties are present", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.usage).to.exist.and.to.be.an('object');
+      expect(responseData.usage.prompt_tokens).to.exist.and.to.be.a('number');
+      expect(responseData.usage.total_tokens).to.exist.and.to.be.a('number');
+  });
+}

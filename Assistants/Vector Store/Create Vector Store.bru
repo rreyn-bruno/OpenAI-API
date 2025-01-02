@@ -1,0 +1,27 @@
+meta {
+  name: Create Vector Store
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/vector_stores
+  body: json
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer $OPENAI_API_KEY
+  Content-Type: application/json
+  OpenAI-Beta: assistants=v2
+}
+
+auth:bearer {
+  token: {{vault:openai-secret-key}}
+}
+
+body:json {
+  {
+      "name": "Support FAQ"
+    }
+}

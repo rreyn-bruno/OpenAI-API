@@ -1,0 +1,76 @@
+meta {
+  name: List Files
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.openai.com/v1/files
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response Content-Type is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  
+  test("Validate the data object and its fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.be.an('array');
+      
+      responseData.data.forEach(function(item) {
+          expect(item).to.be.an('object');
+          expect(item).to.have.property('id');
+          expect(item).to.have.property('purpose');
+          expect(item).to.have.property('filename');
+          expect(item).to.have.property('bytes');
+          expect(item).to.have.property('created_at');
+          expect(item).to.have.property('status');
+      });
+  });
+  
+  
+  test("Has_more field is present and has a boolean value", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.has_more).to.exist.and.to.be.a('boolean');
+  });
+  
+  
+  test("Id is a non-empty string", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.data).to.be.an('array');
+      responseData.data.forEach(function(item) {
+          expect(item.id).to.be.a('string').and.to.have.lengthOf.at.least(1);
+      });
+  });
+  
+  test("Bytes is a non-negative integer", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.data).to.be.an('array');
+      responseData.data.forEach(function(item) {
+          expect(item.bytes).to.be.a('number').and.to.be.at.least(0);
+      });
+  });
+  
+  test("Created_at is a valid timestamp", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.data).to.be.an('array');
+      responseData.data.forEach(function(item) {
+          expect(item.created_at).to.be.a('number');
+      });
+  });
+}

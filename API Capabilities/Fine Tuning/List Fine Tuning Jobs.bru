@@ -1,0 +1,59 @@
+meta {
+  name: List Fine Tuning Jobs
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://api.openai.com/v1/fine_tuning/jobs?limit=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 2
+}
+
+tests {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Content-Type header is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  
+  test("Data array is present and contains at least one element", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.be.an('array').that.is.not.empty;
+  });
+  
+  
+  test("Hyperparameters object contains expected keys", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.be.an('array').and.not.empty;
+      
+      responseData.data.forEach(function(job) {
+          expect(job.hyperparameters).to.be.an('object');
+          expect(job.hyperparameters).to.include.all.keys('n_epochs', 'batch_size', 'learning_rate_multiplier');
+      });
+  });
+  
+  
+  test("Result files array is present and not empty", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.data).to.be.an('array');
+      
+      responseData.data.forEach(function(item) {
+          expect(item.result_files).to.exist.and.to.be.an('array').and.to.have.lengthOf.at.least(1, "Result files array should not be empty");
+      });
+  });
+}

@@ -1,0 +1,11 @@
+meta {
+  name: Cancel Fine Tuning Jobs
+  type: http
+  seq: 8
+}
+
+post {
+  url: https://api.openai.com/v1/fine_tuning/jobs/ftjob-abc123/cancel
+  body: none
+  auth: inherit
+}
