@@ -1,3 +1,7 @@
+This collection provides a comprehensive set of examples to help you get started with the OpenAI API. Easily walkthrough multiple usecases, API Capabilities, and OpenAI's assistant APIs.
+
+The OpenAI API provides a simple interface for developers to create an intelligence layer in their applications powered by OpenAI's state-of-the-art models. The [Chat Completions](https://www.postman.com/devrel/openai/request/xqcsuot/chat-completions?action=share&source=copy-link&creator=21505573&ctx=documentation) endpoint powers ChatGPT and provides a straightforward way to generate text responses.
+
 **There are three folders in this collection.**
 -----------------------------------------------
 
